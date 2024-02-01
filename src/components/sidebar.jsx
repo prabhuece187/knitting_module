@@ -26,17 +26,27 @@ import {
 
 import {
   FiHome,
-  FiTrendingUp,
   FiMenu,
   FiBell,
   FiChevronDown,
+  FiUser,
+  FiDatabase,
+  FiBox,
+  FiCloud,
+  FiArrowRightCircle,
+  FiArrowLeftCircle,
 } from "react-icons/fi";
 
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 
 const LinkItems = [
   { name: "Dashboard", icon: FiHome, to: "/dashboard" },
-  { name: "Customer", icon: FiTrendingUp, to: "/customer" },
+  { name: "Customers", icon: FiUser, to: "/customer" },
+  { name: "Items", icon: FiBox, to: "/item" },
+  { name: "Mills", icon: FiDatabase, to: "/mill" },
+  { name: "Yarn Types", icon: FiCloud, to: "/yarn_type" },
+  { name: "Inward", icon: FiArrowRightCircle, to: "/inward" },
+  { name: "Outward", icon: FiArrowLeftCircle, to: "/outward" },
 ];
 
 export default function Sidebar({ children }) {
@@ -83,7 +93,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Logo
+          Knitting
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
@@ -161,7 +171,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
         fontFamily="monospace"
         fontWeight="bold"
       >
-        Logo
+        Knitting
       </Text>
 
       <HStack spacing={{ base: "0", md: "6" }}>
