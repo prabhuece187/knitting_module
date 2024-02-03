@@ -6,7 +6,6 @@ import {
     Flex,
     Heading,
     Spacer,
-    Box,
     Table,
     Thead,
     Tbody,
@@ -21,58 +20,60 @@ import {
     EditIcon,
     DeleteIcon
 } from "@chakra-ui/icons";
+import CustomBox from "../../components/customBox";
 
 
 const Item = () => {
 
     return(
         <>
-        <Box bg='white'  p={3} mb={5}  style={{borderRadius:"10px"}}>
-          <Flex alignItems="center" gap={2}>
-            <Link to="">
-                <ArrowBackIcon w={6} h={6} />
-            </Link>
+        <CustomBox>
+            <Flex alignItems="center" gap={2}>
+                <Link to="">
+                    <ArrowBackIcon w={6} h={6} />
+                </Link>
 
-            <Heading as="h3" size="lg" color="gray.600">
-              Items 
-            </Heading>
+                <Heading as="h3" size="lg">
+                    Items 
+                </Heading>
 
-            <Spacer/>
+                <Spacer/>
 
-            <Link to="/item_add">
-                <Button colorScheme="blue">
-                    <AddIcon w={4} h={4}  pr={2}/>
-                    Add Item
-                </Button>   
-            </Link>
+                <Link to="/item_add">
+                    <Button colorScheme="blue">
+                        <AddIcon w={4} h={4}  pr={2}/>
+                        Add Item
+                    </Button>   
+                </Link>
+            </Flex>
+        </CustomBox>
 
-          </Flex>
-        </Box>
-
-        <Table variant="simple" bg='white'  p={3} mb={5}  style={{borderRadius:"10px"}}>
-            <Thead>
-                <Tr>
-                    <Th>S.No</Th>
-                    <Th>Item Name</Th>
-                    <Th>Action</Th>
-                </Tr>
-            </Thead>
-            <Tbody>
-                <Tr>
-                    <Td>1</Td>
-                    <Td>Boys Tshirt</Td>
-                    <Td>
-                        <Link to="/item_edit"  pr={5} color="#3182ce">
-                            <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                        </Link>
-                        <Link to="" pr={5} color="#3182ce">
-                            <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
-                        </Link>
-                    </Td>
-                </Tr>
-            </Tbody>
-            
-        </Table>
+        <CustomBox>
+            <Table variant="simple"  style={{borderRadius:"10px"}}>
+                <Thead>
+                    <Tr>
+                        <Th>S.No</Th>
+                        <Th>Item Name</Th>
+                        <Th>Action</Th>
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    <Tr>
+                        <Td>1</Td>
+                        <Td>Boys Tshirt</Td>
+                        <Td>
+                            <Link to="/item_edit"  pr={5} color="#3182ce">
+                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                            </Link>
+                            <Link to="" pr={5} color="#3182ce">
+                                <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                            </Link>
+                        </Td>
+                    </Tr>
+                </Tbody>
+                
+            </Table>
+        </CustomBox>
 
 
         </>

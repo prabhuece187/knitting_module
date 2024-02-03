@@ -5,7 +5,6 @@ import {
     Button,
     Flex,
     Heading,
-    Box,
     Stack,
     FormErrorMessage,
     FormLabel,
@@ -13,8 +12,9 @@ import {
     Input,
   } from "@chakra-ui/react";
 
-  import { ArrowBackIcon } from "@chakra-ui/icons";
-  import { useForm } from "react-hook-form";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useForm } from "react-hook-form";
+import CustomBox from "../../components/customBox";
 
 
 const MillEdit = () => {
@@ -30,20 +30,19 @@ const MillEdit = () => {
 
     return(
         <>
-        <Box bg='white'  p={3} mb={5}  style={{borderRadius:"10px"}}>
-          <Flex alignItems="center" gap={2}>
-            <Link to="/mill">
-                <ArrowBackIcon w={6} h={6} />
-            </Link>
+        <CustomBox>
+            <Flex alignItems="center" gap={2}>
+                <Link to="/mill">
+                    <ArrowBackIcon w={6} h={6} />
+                </Link>
 
-            <Heading as="h3" size="lg" color="gray.600">
-              Mill Edit
-            </Heading>
-
-          </Flex>
-        </Box>
+                <Heading as="h3" size="lg">
+                   Mill Edit Form
+                </Heading>
+            </Flex>
+        </CustomBox>
         <form onSubmit={handleSubmit(onFormSubmit)}>
-            <Box bg='white'  p={4}  style={{borderRadius:"10px"}}>
+            <CustomBox>
                 <Stack spacing={4}>
 
                     <FormControl isInvalid={errors?.mill_name} >
@@ -58,7 +57,7 @@ const MillEdit = () => {
                        Submit
                     </Button>
                 </Stack>
-            </Box>
+            </CustomBox>
         </form>
 
         </>
