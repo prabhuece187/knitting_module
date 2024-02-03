@@ -6,7 +6,6 @@ import {
     Flex,
     Heading,
     Spacer,
-    Box,
     Table,
     Thead,
     Tbody,
@@ -21,58 +20,58 @@ import {
     EditIcon,
     DeleteIcon
 } from "@chakra-ui/icons";
+import CustomBox from "../../components/customBox";
 
 
 const YarnType = () => {
 
     return(
         <>
-        <Box bg='white'  p={3} mb={5}  style={{borderRadius:"10px"}}>
-          <Flex alignItems="center" gap={2}>
-            <Link to="">
-                <ArrowBackIcon w={6} h={6} />
-            </Link>
+        <CustomBox>
+            <Flex alignItems="center" gap={2}>
+                <Link to="">
+                    <ArrowBackIcon w={6} h={6} />
+                </Link>
 
-            <Heading as="h3" size="lg" color="gray.600">
-              YarnType 
-            </Heading>
+                <Heading as="h3" size="lg">
+                  Yarn Types 
+                </Heading>
 
-            <Spacer/>
+                <Spacer/>
 
-            <Link to="/yarn_type_add">
-                <Button colorScheme="blue">
-                    <AddIcon w={4} h={4}  pr={2}/>
-                    Add YarnType
-                </Button>   
-            </Link>
-
-          </Flex>
-        </Box>
-
-        <Table variant="simple" bg='white'  p={3} mb={5}  style={{borderRadius:"10px"}}>
-            <Thead>
-                <Tr>
-                    <Th>S.No</Th>
-                    <Th>Yarn Type Name</Th>
-                    <Th>Action</Th>
-                </Tr>
-            </Thead>
-            <Tbody>
-                <Tr>
-                    <Td>1</Td>
-                    <Td>Cotton Type</Td>
-                    <Td>
-                        <Link to="/yarn_type_edit"  pr={5} color="#3182ce">
-                            <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                        </Link>
-                        <Link to="" pr={5} color="#3182ce">
-                            <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
-                        </Link>
-                    </Td>
-                </Tr>
-            </Tbody>
-            
-        </Table>
+                <Link to="/yarn_type_add">
+                    <Button colorScheme="blue">
+                        <AddIcon w={4} h={4}  pr={2}/>
+                        Add Yarn types
+                    </Button>   
+                </Link>
+            </Flex>
+        </CustomBox>
+        <CustomBox>
+            <Table variant="simple" style={{borderRadius:"10px"}}>
+                <Thead>
+                    <Tr>
+                        <Th>S.No</Th>
+                        <Th>Yarn Type Name</Th>
+                        <Th>Action</Th>
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    <Tr>
+                        <Td>1</Td>
+                        <Td>Cotton Type</Td>
+                        <Td>
+                            <Link to="/yarn_type_edit"  pr={5} color="#3182ce">
+                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                            </Link>
+                            <Link to="" pr={5} color="#3182ce">
+                                <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                            </Link>
+                        </Td>
+                    </Tr>
+                </Tbody>
+            </Table>
+        </CustomBox>
 
 
         </>

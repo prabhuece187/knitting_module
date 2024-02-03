@@ -6,7 +6,6 @@ import {
     Flex,
     Heading,
     Spacer,
-    Box,
     Stack,
     FormErrorMessage,
     FormLabel,
@@ -14,12 +13,14 @@ import {
     Input,
   } from "@chakra-ui/react";
 
-  import { ArrowBackIcon } from "@chakra-ui/icons";
-  import { useForm, Controller } from "react-hook-form";
-  import { Select } from "chakra-react-select";
-  import { useSelector,useDispatch } from "react-redux";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useForm, Controller } from "react-hook-form";
+import { Select } from "chakra-react-select";
+import { useSelector,useDispatch } from "react-redux";
 
-  import { clearState } from "../../features/knitting/knittingSlice";
+import { clearState } from "../../features/knitting/knittingSlice";
+import CustomBox from "../../components/customBox";
+  
 
 const CustomerAdd = () => {
     const {states} = useSelector((state) => state.knitting);
@@ -36,14 +37,14 @@ const CustomerAdd = () => {
 
     return(
         <>
-        <Box bg='white'  p={3} mb={5}  style={{borderRadius:"10px"}}>
-          <Flex alignItems="center" gap={2}>
+        <CustomBox>
+            <Flex alignItems="center" gap={2}>
             <Link to="/customer">
                 <ArrowBackIcon w={6} h={6} />
             </Link>
 
-            <Heading as="h3" size="lg" color="gray.600">
-              Customer Add
+            <Heading as="h3" size="lg">
+                Customer Add Form
             </Heading>
 
             <Spacer/>
@@ -51,11 +52,11 @@ const CustomerAdd = () => {
             <Button colorScheme="blue" onClick={() => dispatch(clearState())}>
                 Clear State
             </Button>
-
-          </Flex>
-        </Box>
+            </Flex>
+        </CustomBox>
+        
         <form onSubmit={handleSubmit(onFormSubmit)}>
-            <Box bg='white'  p={4}  style={{borderRadius:"10px"}}>
+            <CustomBox>
                 <Stack spacing={4}>
                     <FormControl isInvalid={errors?.name} >
                         <FormLabel color="gray.600">Name</FormLabel>
@@ -134,10 +135,10 @@ const CustomerAdd = () => {
 
 
                     <Button colorScheme="blue" type="submit">
-                       Submit
+                    Submit
                     </Button>
                 </Stack>
-            </Box>
+            </CustomBox>
         </form>
 
         </>

@@ -16,6 +16,11 @@ import YarnType from './pages/yarn_type/yarn_type';
 import YarnTypeAdd from './pages/yarn_type/yarn_type_add';
 import YarnTypeEdit from './pages/yarn_type/yarn_type_edit';
 import Inward from './pages/inward/inward';
+import InwardAdd from './pages/inward/inward_add';
+import InwardEdit from './pages/inward/inward_edit';
+import Outward from './pages/outward/outward';
+import OutwardAdd from './pages/outward/outward_add';
+import OutwardEdit from './pages/outward/outward_edit';
 
 
 
@@ -44,6 +49,14 @@ function App() {
            <Route path="yarn_type_edit" element={<YarnTypeEdit />} ></Route>
            
            <Route path="inward" element={<Inward />} ></Route>
+           <Route path="inward_add" element={<InwardAdd />} ></Route>
+           <Route path="inward_edit" element={<InwardEdit />} ></Route>
+
+           <Route path="outward" element={<Outward />} ></Route>
+           <Route path="outward_add" element={<OutwardAdd />} ></Route>
+           <Route path="outward_edit" element={<OutwardEdit />} ></Route>
+
+
 
       </Route>
      </Routes>
