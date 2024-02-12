@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import { 
+    useGetCustomerQuery,
+    useGetCustomerByIdQuery,
+} from "../../services/customerApi";
+
 import {
     Button,
     Flex,
@@ -31,6 +36,13 @@ import {
 } from "../../features/knitting/knittingSlice";
 
 const Customer = () => {
+
+    const { data:customerData } = useGetCustomerQuery();
+    const { data:customerDatas } = useGetCustomerByIdQuery(1);
+
+    console.log(customerData);
+    console.log(customerDatas);
+
     const dispatch = useDispatch();
 
     return(
@@ -101,23 +113,29 @@ const Customer = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    <Tr>
-                        <Td>1</Td>
-                        <Td>Prabhu</Td>
-                        <Td>tamilnadu</Td>
-                        <Td>33ASDBTIN12S</Td>
-                        <Td>9566728542</Td>
-                        <Td>prabhuking@gmail.com</Td>
-                        <Td>tiruppur</Td>
-                        <Td>
-                            <Link to="/customer_edit"  pr={5} color="#3182ce">
-                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                            <Link to="" pr={5} color="#3182ce">
-                                <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                        </Td>
-                    </Tr>
+                {customerData && customerData.map((cus, index) => {
+                    return (
+                        <Tr>
+                            <Td>{ index + 1 }</Td>
+                            <Td>{ cus.customer_name }</Td>
+                            <Td>{ cus.customer_state }</Td>
+                            <Td>{ cus.customer_gst_no }</Td>
+                            <Td>{ cus.customer_mobile }</Td>
+                            <Td>{ cus.customer_email }</Td>
+                            <Td>{ cus.customer_address }</Td>
+                            <Td>
+                                <Link to={{
+                                      pathname: `/customer_edit/${cus.id}`,
+                                    }}  pr={5} color="#3182ce">
+                                    <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                                <Link to="" pr={5} color="#3182ce">
+                                    <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                            </Td>
+                        </Tr>
+                    );
+                })}
                 </Tbody>
                 
             </Table>

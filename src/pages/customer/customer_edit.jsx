@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -20,18 +20,44 @@ import { useSelector,useDispatch } from "react-redux";
 
 import { clearState } from "../../features/knitting/knittingSlice";
 import CustomBox from "../../components/customBox";
+import { useGetCustomerByIdQuery,usePutCustomerMutation} from "../../services/customerApi";
 
 const CustomerEdit = () => {
     const {states} = useSelector((state) => state.knitting);
     const dispatch = useDispatch();
-
+    const { customerId } = useParams();
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         control,
+        setValue
         } = useForm();
-    const onFormSubmit = (data) => console.log(data);
+
+    const { data: member }
+    = useGetCustomerByIdQuery(customerId, {
+      skip: customerId === undefined,
+    });
+
+    const [putCustomer] = usePutCustomerMutation();
+
+    if (member?.id){
+        setValue(`customer_name`, member.customer_name);
+        setValue(`customer_gst_no`, member.customer_gst_no);
+        setValue(`customer_state`, {value: member.customer_state , label: member.customer_state_code});
+        setValue(`customer_mobile`, member.customer_mobile);
+        setValue(`customer_email`, member.customer_email);
+        setValue(`customer_address`, member.customer_address);
+        setValue(`user_id`, member.user_id);
+        setValue(`id`, member.id);
+    }
+
+
+    const onFormSubmit = (data) =>{ 
+        
+        putCustomer(data);
+        console.log(data);
+    }
 
 
     return(
@@ -57,12 +83,12 @@ const CustomerEdit = () => {
         <form onSubmit={handleSubmit(onFormSubmit)}>
             <CustomBox>
                 <Stack spacing={4}>
-                    <FormControl isInvalid={errors?.name} >
+                    <FormControl isInvalid={errors?.customer_name} >
                         <FormLabel color="gray.600">Name</FormLabel>
                         <Input type='text' placeholder="Name" {
-                            ... register("name" ,{required:"Name Field Is Empyt"})
+                            ... register("customer_name" ,{required:"Name Field Is Empyt"})
                         }/>
-                        <FormErrorMessage>{errors?.name && errors.name.message}</FormErrorMessage>
+                        <FormErrorMessage>{errors?.customer_name && errors.customer_name.message}</FormErrorMessage>
                     </FormControl>
 
                     <Controller
@@ -110,7 +136,7 @@ const CustomerEdit = () => {
 
                     <FormControl >
                         <FormLabel color="gray.600">Mobile No</FormLabel>
-                        <Input type='number' placeholder="Mobile No" {
+                        <Input type='text' placeholder="Mobile No" {
                             ... register("customer_mobile")
                         }/>
                         <FormErrorMessage></FormErrorMessage>
@@ -128,6 +154,14 @@ const CustomerEdit = () => {
                         <FormLabel color="gray.600">Address</FormLabel>
                         <Input type='text' placeholder="Address" {
                             ... register("customer_address")
+                        }/>
+                        <FormErrorMessage></FormErrorMessage>
+                    </FormControl> 
+
+                    <FormControl >
+                        <FormLabel color="gray.600">User Id</FormLabel>
+                        <Input type='number' placeholder="user_id" {
+                            ... register("user_id")
                         }/>
                         <FormErrorMessage></FormErrorMessage>
                     </FormControl> 

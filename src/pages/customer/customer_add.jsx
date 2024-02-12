@@ -20,19 +20,29 @@ import { useSelector,useDispatch } from "react-redux";
 
 import { clearState } from "../../features/knitting/knittingSlice";
 import CustomBox from "../../components/customBox";
+
+import { 
+    usePostCustomerMutation,
+} from "../../services/customerApi";
   
 
 const CustomerAdd = () => {
     const {states} = useSelector((state) => state.knitting);
     const dispatch = useDispatch();
 
+    const [postCustomer] = usePostCustomerMutation();
+
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         control,
-        } = useForm();
-    const onFormSubmit = (data) => console.log(data);
+    } = useForm();
+
+    const onFormSubmit = (data) => { 
+        postCustomer(data);
+        console.log(data);
+    };
 
 
     return(
@@ -58,13 +68,22 @@ const CustomerAdd = () => {
         <form onSubmit={handleSubmit(onFormSubmit)}>
             <CustomBox>
                 <Stack spacing={4}>
-                    <FormControl isInvalid={errors?.name} >
+                    <FormControl isInvalid={errors?.customer_name} >
                         <FormLabel color="gray.600">Name</FormLabel>
                         <Input type='text' placeholder="Name" {
-                            ... register("name" ,{required:"Name Field Is Empyt"})
+                            ... register("customer_name" ,{required:"Name Field Is Empyt"})
                         }/>
-                        <FormErrorMessage>{errors?.name && errors.name.message}</FormErrorMessage>
+                        <FormErrorMessage>{errors?.customer_name && errors.customer_name.message}</FormErrorMessage>
                     </FormControl>
+
+                    <FormControl hidden>
+                        <FormLabel color="gray.600">State Code</FormLabel>
+                        <Input type='text' placeholder="State Code" {
+                            ... register("customer_state_code")
+                        }/>
+                        <FormErrorMessage></FormErrorMessage>
+                    </FormControl>
+
 
                     <Controller
                     control={control}
@@ -94,7 +113,7 @@ const CustomerAdd = () => {
                         <FormErrorMessage>{errors.customer_state && errors.customer_state.message}</FormErrorMessage>
                     </FormControl>
                     )}
-                    />
+                    />                    
 
                     <FormControl isInvalid={errors?.customer_gst_no}>
                         <FormLabel color="gray.600">Gst No</FormLabel>
@@ -111,7 +130,7 @@ const CustomerAdd = () => {
 
                     <FormControl >
                         <FormLabel color="gray.600">Mobile No</FormLabel>
-                        <Input type='number' placeholder="Mobile No" {
+                        <Input type='text' placeholder="Mobile No" {
                             ... register("customer_mobile")
                         }/>
                         <FormErrorMessage></FormErrorMessage>
@@ -129,6 +148,14 @@ const CustomerAdd = () => {
                         <FormLabel color="gray.600">Address</FormLabel>
                         <Input type='text' placeholder="Address" {
                             ... register("customer_address")
+                        }/>
+                        <FormErrorMessage></FormErrorMessage>
+                    </FormControl> 
+
+                    <FormControl >
+                        <FormLabel color="gray.600">User Id</FormLabel>
+                        <Input type='number' placeholder="user_id" {
+                            ... register("user_id")
                         }/>
                         <FormErrorMessage></FormErrorMessage>
                     </FormControl> 
