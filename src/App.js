@@ -34,7 +34,7 @@ function App() {
 
            <Route path="customer" element={<Customer />} ></Route>
            <Route path="customer_add" element={<CustomerAdd />} ></Route>
-           <Route path="customer_edit" element={<CustomerEdit />} ></Route>
+           <Route path="customer_edit/:customerId" element={<CustomerEdit />} ></Route>
 
            <Route path="mill" element={<Mill />} ></Route>
            <Route path="mill_add" element={<MillAdd />} ></Route>
