@@ -21,10 +21,11 @@ import {
     DeleteIcon
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
+import { useGetMillQuery } from "../../services/master/millApi";
 
 
 const Mill = () => {
-
+    const {data:MillData} = useGetMillQuery();
     return(
         <>
         <CustomBox>
@@ -58,18 +59,24 @@ const Mill = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    <Tr>
-                        <Td>1</Td>
-                        <Td>kkfg group</Td>
-                        <Td>
-                            <Link to="/mill_edit"  pr={5} color="#3182ce">
-                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                            <Link to="" pr={5} color="#3182ce">
-                                <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                        </Td>
-                    </Tr>
+                {MillData && MillData.map((mill, index) => {
+                    return (
+                        <Tr>
+                            <Td>{ index + 1 }</Td>
+                            <Td>{ mill.mill_name }</Td>
+                            <Td>
+                                <Link to={{
+                                      pathname: `/mill_edit/${mill.id}`,
+                                    }}  pr={5} color="#3182ce">
+                                    <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                                <Link to="" pr={5} color="#3182ce">
+                                    <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                            </Td>
+                        </Tr>
+                     );
+                    })}
                 </Tbody>
                 
             </Table>

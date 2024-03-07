@@ -21,9 +21,12 @@ import {
     DeleteIcon
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
+import { useGetItemQuery } from "../../services/master/itemApi";
 
 
 const Item = () => {
+
+    const {data:ItemData} = useGetItemQuery();
 
     return(
         <>
@@ -58,18 +61,24 @@ const Item = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    <Tr>
-                        <Td>1</Td>
-                        <Td>Boys Tshirt</Td>
-                        <Td>
-                            <Link to="/item_edit"  pr={5} color="#3182ce">
-                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                            <Link to="" pr={5} color="#3182ce">
-                                <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                        </Td>
-                    </Tr>
+                {ItemData && ItemData.map((item, index) => {
+                    return (
+                        <Tr>
+                            <Td>{ index + 1 }</Td>
+                            <Td>{ item.item_name }</Td>
+                            <Td>
+                                <Link to={{
+                                      pathname: `/item_edit/${item.id}`,
+                                    }}  pr={5} color="#3182ce">
+                                    <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                                <Link to="" pr={5} color="#3182ce">
+                                    <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                            </Td>
+                        </Tr>
+                    );
+                })}
                 </Tbody>
                 
             </Table>

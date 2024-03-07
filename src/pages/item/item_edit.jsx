@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -15,16 +15,38 @@ import {
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import CustomBox from "../../components/customBox";
+import { useGetItemByIdQuery, usePutItemMutation } from "../../services/master/itemApi";
 
 
 const ItemEdit = () => {
+
+    const { itemId } = useParams();
    
     const { 
         register, 
         handleSubmit,
         formState :{errors},
+        setValue,
         } = useForm();
-    const onFormSubmit = (data) => console.log(data);
+
+    const { data: item }
+        = useGetItemByIdQuery(itemId, {
+          skip: itemId === undefined,
+        });
+
+    const [putItem] = usePutItemMutation();
+
+    if (item?.id){
+        setValue(`item_name`, item.item_name);
+        setValue(`user_id`, item.user_id);
+        setValue(`id`, item.id);
+    }
+
+
+    const onFormSubmit = (data) =>{ 
+        putItem(data);
+        console.log(data);
+    }
 
     return(
         <>
@@ -49,6 +71,14 @@ const ItemEdit = () => {
                         }/>
                         <FormErrorMessage>{errors?.item_name && errors.item_name.message}</FormErrorMessage>
                     </FormControl>
+
+                    <FormControl >
+                        <FormLabel color="gray.600">User Id</FormLabel>
+                        <Input type='number' placeholder="user_id" {
+                            ... register("user_id")
+                        }/>
+                        <FormErrorMessage></FormErrorMessage>
+                    </FormControl> 
 
                     <Button colorScheme="blue" type="submit">
                        Submit

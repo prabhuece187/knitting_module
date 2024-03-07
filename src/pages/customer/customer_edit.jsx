@@ -20,7 +20,7 @@ import { useSelector,useDispatch } from "react-redux";
 
 import { clearState } from "../../features/knitting/knittingSlice";
 import CustomBox from "../../components/customBox";
-import { useGetCustomerByIdQuery,usePutCustomerMutation} from "../../services/customerApi";
+import { useGetCustomerByIdQuery,usePutCustomerMutation} from "../../services/master/customerApi";
 
 const CustomerEdit = () => {
     const {states} = useSelector((state) => state.knitting);
