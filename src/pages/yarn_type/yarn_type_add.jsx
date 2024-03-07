@@ -15,17 +15,23 @@ import {
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import CustomBox from "../../components/customBox";
+import { usePostYarnTypeMutation } from "../../services/master/yarntypeApi";
 
 
 const YarnTypeAdd = () => {
    
+    const [postYarnType] = usePostYarnTypeMutation();
 
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         } = useForm();
-    const onFormSubmit = (data) => console.log(data);
+
+    const onFormSubmit = (data) => { 
+        postYarnType(data);
+        console.log(data);
+    };
 
 
     return(
@@ -44,13 +50,21 @@ const YarnTypeAdd = () => {
         <form onSubmit={handleSubmit(onFormSubmit)}>
             <CustomBox>
                 <Stack spacing={4}>
-                    <FormControl isInvalid={errors?.yarn_type_name} >
+                    <FormControl isInvalid={errors?.yarn_type} >
                         <FormLabel color="gray.600">Name</FormLabel>
                         <Input type='text' placeholder="Name" {
-                            ... register("yarn_type_name" ,{required:"Name Field Is Empyt"})
+                            ... register("yarn_type" ,{required:"Name Field Is Empyt"})
                         }/>
-                        <FormErrorMessage>{errors?.yarn_type_name && errors.yarn_type_name.message}</FormErrorMessage>
+                        <FormErrorMessage>{errors?.yarn_type && errors.yarn_type.message}</FormErrorMessage>
                     </FormControl>
+
+                    <FormControl >
+                        <FormLabel color="gray.600">User Id</FormLabel>
+                        <Input type='number' placeholder="user_id" {
+                            ... register("user_id")
+                        }/>
+                        <FormErrorMessage></FormErrorMessage>
+                    </FormControl> 
 
                     <Button colorScheme="blue" type="submit">
                        Submit

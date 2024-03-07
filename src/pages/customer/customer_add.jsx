@@ -23,7 +23,7 @@ import CustomBox from "../../components/customBox";
 
 import { 
     usePostCustomerMutation,
-} from "../../services/customerApi";
+} from "../../services/master/customerApi";
   
 
 const CustomerAdd = () => {

@@ -21,10 +21,11 @@ import {
     DeleteIcon
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
+import { useGetYarnTypeQuery } from "../../services/master/yarntypeApi";
 
 
 const YarnType = () => {
-
+    const {data:YarnTypeData} = useGetYarnTypeQuery();
     return(
         <>
         <CustomBox>
@@ -57,18 +58,24 @@ const YarnType = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    <Tr>
-                        <Td>1</Td>
-                        <Td>Cotton Type</Td>
-                        <Td>
-                            <Link to="/yarn_type_edit"  pr={5} color="#3182ce">
-                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                            <Link to="" pr={5} color="#3182ce">
-                                <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                        </Td>
-                    </Tr>
+                {YarnTypeData && YarnTypeData.map((yarn, index) => {
+                    return (
+                        <Tr>
+                            <Td>{ index + 1 }</Td>
+                            <Td>{ yarn.yarn_type }</Td>
+                            <Td>
+                                <Link to={{
+                                      pathname: `/yarn_type_edit/${yarn.id}`,
+                                    }}  pr={5} color="#3182ce">
+                                    <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                                <Link to="" pr={5} color="#3182ce">
+                                    <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                            </Td>
+                        </Tr>
+                     );
+                    })}
                 </Tbody>
             </Table>
         </CustomBox>

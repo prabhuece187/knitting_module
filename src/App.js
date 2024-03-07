@@ -38,15 +38,15 @@ function App() {
 
            <Route path="mill" element={<Mill />} ></Route>
            <Route path="mill_add" element={<MillAdd />} ></Route>
-           <Route path="mill_edit" element={<MillEdit />} ></Route>
+           <Route path="mill_edit/:millId" element={<MillEdit />} ></Route>
 
            <Route path="item" element={<Item />} ></Route>
            <Route path="item_add" element={<ItemAdd />} ></Route>
-           <Route path="item_edit" element={<ItemEdit />} ></Route>
+           <Route path="item_edit/:itemId" element={<ItemEdit />} ></Route>
 
            <Route path="yarn_type" element={<YarnType />} ></Route>
            <Route path="yarn_type_add" element={<YarnTypeAdd />} ></Route>
-           <Route path="yarn_type_edit" element={<YarnTypeEdit />} ></Route>
+           <Route path="yarn_type_edit/:yarntypeId" element={<YarnTypeEdit />} ></Route>
            
            <Route path="inward" element={<Inward />} ></Route>
            <Route path="inward_add" element={<InwardAdd />} ></Route>

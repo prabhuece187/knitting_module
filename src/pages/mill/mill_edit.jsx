@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -15,18 +15,37 @@ import {
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import CustomBox from "../../components/customBox";
+import { useGetMillByIdQuery, usePutMillMutation } from "../../services/master/millApi";
 
 
 const MillEdit = () => {
-   
+    const { millId } = useParams();
 
     const { 
         register, 
         handleSubmit,
+        setValue,
         formState :{errors},
         } = useForm();
-    const onFormSubmit = (data) => console.log(data);
+ 
+    const { data: mill }
+        = useGetMillByIdQuery(millId, {
+          skip: millId === undefined,
+        });
 
+    const [putMill] = usePutMillMutation();
+
+    if (mill?.id){
+        setValue(`mill_name`, mill.mill_name);
+        setValue(`user_id`, mill.user_id);
+        setValue(`id`, mill.id);
+    }
+
+
+    const onFormSubmit = (data) =>{ 
+        putMill(data);
+        console.log(data);
+    }
 
     return(
         <>
@@ -52,6 +71,14 @@ const MillEdit = () => {
                         }/>
                         <FormErrorMessage>{errors?.mill_name && errors.mill_name.message}</FormErrorMessage>
                     </FormControl>
+
+                    <FormControl >
+                        <FormLabel color="gray.600">User Id</FormLabel>
+                        <Input type='number' placeholder="user_id" {
+                            ... register("user_id")
+                        }/>
+                        <FormErrorMessage></FormErrorMessage>
+                    </FormControl> 
 
                     <Button colorScheme="blue" type="submit">
                        Submit

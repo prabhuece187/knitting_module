@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 
 import { 
     useGetCustomerQuery,
-    useGetCustomerByIdQuery,
-} from "../../services/customerApi";
+} from "../../services/master/customerApi";
 
 import {
     Button,
@@ -38,10 +37,6 @@ import {
 const Customer = () => {
 
     const { data:customerData } = useGetCustomerQuery();
-    const { data:customerDatas } = useGetCustomerByIdQuery(1);
-
-    console.log(customerData);
-    console.log(customerDatas);
 
     const dispatch = useDispatch();
 
