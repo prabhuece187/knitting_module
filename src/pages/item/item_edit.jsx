@@ -34,14 +34,13 @@ const ItemEdit = () => {
           skip: itemId === undefined,
         });
 
-    const [putItem] = usePutItemMutation();
-
     if (item?.id){
         setValue(`item_name`, item.item_name);
         setValue(`user_id`, item.user_id);
         setValue(`id`, item.id);
     }
 
+    const [putItem] = usePutItemMutation();
 
     const onFormSubmit = (data) =>{ 
         putItem(data);

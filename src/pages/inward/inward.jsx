@@ -20,11 +20,16 @@ import {
     EditIcon,
     DeleteIcon
 } from "@chakra-ui/icons";
+
 import CustomBox from "../../components/customBox";
+import { useGetInwardQuery } from "../../services/inward/inwardApi";
 
 
 const Inward = () => {
 
+    const {data:InwardData} = useGetInwardQuery();
+
+    
 
     return(
         <>
@@ -67,26 +72,32 @@ const Inward = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    <Tr>
-                        <Td>1</Td>
-                        <Td>Prabhu</Td>
-                        <Td>kkgp group</Td>
-                        <Td>1</Td>
-                        <Td>1</Td>
-                        <Td>2/01/2024</Td>
-                        <Td>50 kg</Td>
-                        <Td>49 kg</Td>
-                        <Td>tn 42 d 7087</Td>
-                        <Td>success</Td>
-                        <Td>
-                            <Link to="/inward_edit"  pr={5} color="#3182ce">
-                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                            <Link to="" pr={5} color="#3182ce">
-                                <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
-                        </Td>
-                    </Tr>
+                {InwardData && InwardData.map((inward, index) => {
+                    return (
+                        <Tr>
+                            <Td>{ index + 1 }</Td>
+                            <Td>{ inward.customer.customer_name }</Td>
+                            <Td>{ inward.mill.mill_name }</Td>
+                            <Td>{ inward.inward_no }</Td>
+                            <Td>{ inward.inward_tin_no }</Td>
+                            <Td>{ inward.inward_date }</Td>
+                            <Td>{ inward.total_weight }</Td>
+                            <Td>{ inward.total_quantity }</Td>
+                            <Td>{ inward.inward_vehicle_no }</Td>
+                            <Td>{ inward.status }</Td>
+                            <Td>
+                                <Link to={{
+                                      pathname: `/inward_edit/${inward.id}`,
+                                    }}  pr={5} color="#3182ce">
+                                    <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                                <Link to="" pr={5} color="#3182ce">
+                                    <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                            </Td>
+                        </Tr>
+                     );
+                    })}
                 </Tbody>
                 
             </Table>

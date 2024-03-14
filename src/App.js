@@ -50,11 +50,11 @@ function App() {
            
            <Route path="inward" element={<Inward />} ></Route>
            <Route path="inward_add" element={<InwardAdd />} ></Route>
-           <Route path="inward_edit" element={<InwardEdit />} ></Route>
+           <Route path="inward_edit/:inwardId" element={<InwardEdit />} ></Route>
 
            <Route path="outward" element={<Outward />} ></Route>
            <Route path="outward_add" element={<OutwardAdd />} ></Route>
-           <Route path="outward_edit" element={<OutwardEdit />} ></Route>
+           <Route path="outward_edit/:outwardId" element={<OutwardEdit />} ></Route>
 
 
 
