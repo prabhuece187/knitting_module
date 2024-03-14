@@ -25,7 +25,9 @@ import { useGetMillQuery } from "../../services/master/millApi";
 
 
 const Mill = () => {
+    
     const {data:MillData} = useGetMillQuery();
+
     return(
         <>
         <CustomBox>

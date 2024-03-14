@@ -21,10 +21,12 @@ import {
     DeleteIcon
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
+import { useGetOutwardQuery } from "../../services/outward/outwarApi";
 
 
 const Outward = () => {
 
+    const {data:OutwardData} = useGetOutwardQuery();
 
     return(
         <>
@@ -68,28 +70,35 @@ const Outward = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
+
+                {OutwardData && OutwardData.map((outward, index) => {
+                    return (
                     <Tr>
-                        <Td>1</Td>
-                        <Td>Prabhu</Td>
-                        <Td>kkgp group</Td>
-                        <Td>1</Td>
-                        <Td>1</Td>
-                        <Td>1</Td>
-                        <Td>2/01/2024</Td>
-                        <Td>50 kg</Td>
-                        <Td>49 kg</Td>
-                        <Td>tn 42 d 7087</Td>
-                        <Td>success</Td>
-                        <Td>success</Td>
+                        <Td>{ index + 1 }</Td>
+                        <Td>{ outward.customer.customer_name }</Td>
+                        <Td>{ outward.mill.mill_name }</Td>
+                        <Td>{ outward.outward_no }</Td>
+                        <Td>{ outward.inward_no }</Td>
+                        <Td>{ outward.outward_tin_no }</Td>
+                        <Td>{ outward.outward_date }</Td>
+                        <Td>{ outward.total_weight }</Td>
+                        <Td>{ outward.total_quantity }</Td>
+                        <Td>{ outward.outward_vehicle_no }</Td>
+                        <Td>{ outward.yarn_send }</Td>
+                        <Td>{ outward.status }</Td>
                         <Td>
-                            <Link to="/outward_edit"  pr={5} color="#3182ce">
-                                <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
-                            </Link>
+                        <Link to={{
+                                      pathname: `/outward_edit/${outward.id}`,
+                                    }}  pr={5} color="#3182ce">
+                                    <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
                             <Link to="" pr={5} color="#3182ce">
                                 <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
                             </Link>
                         </Td>
                     </Tr>
+                     );
+                    })}
                 </Tbody>
                 
             </Table>

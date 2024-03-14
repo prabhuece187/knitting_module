@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+// import React, { useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 
 
@@ -29,65 +29,29 @@ import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Select } from "chakra-react-select";
 
 import CustomBox from "../../components/customBox";
+import { useGetCustomerQuery } from "../../services/master/customerApi";
+import { useGetItemQuery } from "../../services/master/itemApi";
+import { useGetYarnTypeQuery } from "../../services/master/yarntypeApi";
+import { useGetMillQuery } from "../../services/master/millApi";
+import { useGetOutwardByIdQuery, usePutOutwardMutation } from "../../services/outward/outwarApi";
+import { useEffect } from "react";
 
-
-
-const customers = [
-  {
-    id:1,
-    customer_name: "Ameer",
-  },
-  {
-    id:2,
-    customer_name: "John",
-  },
-  {
-    id:3,
-    customer_name: "Siva",
-  },
-];
-
-const yarn_types = [
-    {
-      id:1,
-      yarn_type: "cotton",
-    },
-    {
-      id:2,
-      yarn_type: "poly",
-    },
-    {
-      id:3,
-      yarn_type: "non-poly",
-    },
-  ];
-
-const items = [
-  {
-    id: 1,
-    item_name: "Item 1",
-  },
-  {
-    id: 2,
-    item_name: "Item 2",
-  },
-  {
-    id: 3,
-    item_name: "Item 3",
-  },
-  {
-    id: 4,
-    item_name: "Item 4",
-  },
-  {
-    id: 5,
-    item_name: "Item 5",
-  },
-];
 
 const OutwardEdit = () => {
-  const [total_quantity, setTotalQuantity] = useState(0);
-  const [total_weight, setTotalWeight] = useState(0);
+
+  const { outwardId } = useParams();
+
+  const [putOutward] = usePutOutwardMutation();
+
+  const { data: outward,isLoading } = useGetOutwardByIdQuery(outwardId, {
+      skip: outwardId === undefined,
+    });
+
+  const { data:customers } = useGetCustomerQuery();
+  const { data:items } = useGetItemQuery();
+  const { data:yarn_types } = useGetYarnTypeQuery();
+  const { data:mills } = useGetMillQuery();
+
 
   const {
     register,
@@ -110,12 +74,82 @@ const OutwardEdit = () => {
 
   const watchItems = watch("Items");
 
-  if (itemFields.length === 0) {
-    appendItem();
+  const tempQty = getValues("total_quantity");
+  const tempWeight = getValues("total_weight");
+
+
+  function amountCalculation(results) {
+    let TotalQty = 0;
+    let TotalWeight = 0;
+    for (const key in results) {
+      const total_qty = parseFloat(results[key].outward_qty);
+
+      TotalQty = TotalQty + (Number.isNaN(total_qty) ? 0 : total_qty);
+
+      const outward_weight = parseFloat(results[key].outward_weight);
+
+      TotalWeight = TotalWeight + (Number.isNaN(outward_weight) ? 0 : outward_weight);
+    }
+    setValue("total_quantity", TotalQty);
+    setValue("total_weight", TotalWeight);
+
+  };
+
+  const EditOutward = (outward) => { 
+    if (outward?.id){
+      
+        const fields = [
+          "outward_no",
+          "inward_id",
+          "outward_invoice_no",
+          "outward_tin_no",
+          "outward_date",
+          "total_weight",
+          "total_quantity",
+          "outward_vehicle_no",
+          "status",
+          "user_id",
+          "id",
+          "yarn_send",
+        ];
+        fields.forEach((field) => 
+          setValue(field, outward[field])
+        );
+
+        outward.Items.map((items) =>
+          appendItem({
+            item: { item_id: items.item.id, item_name: items.item.item_name },
+            item_id: items.item.id,
+            item_name: items.item.name,
+            yarn : {id:items.yarn_type.id, yarn_type:items.yarn_type.yarn_type},
+            yarn_type_id: items.yarn_type.id,
+            yarn_type: items.yarn_type.yarn_type,
+            yarn_dia: items.yarn_dia,
+            yarn_gsm: items.yarn_gsm,
+            yarn_gauge: items.yarn_gauge,
+            outward_qty: items.outward_qty,
+            outward_weight: items.outward_weight,
+            yarn_colour: items.yarn_colour,
+            outward_detail_date: items.outward_detail_date,
+            deliverd_weight: items.deliverd_weight,
+          })
+        );
+
+        setValue("customer", {
+          id: outward.customer.id,
+          customer_name: outward.customer.customer_name,
+        });
+
+        setValue("mill", {
+          id: outward.mill.id,
+          mill_name: outward.mill.mill_name,
+        });
+    }
   }
 
   const itemChange = (e, index) => {
-    setValue(`Items.${index}.item.item_id`, e.item_id);
+    setValue(`Items.${index}.item_id`, e.id);
+    setValue(`Items.${index}.item_name`, e.item_name);
     setValue(`Items.${index}.outward_qty`, e.outward_qty,{ shouldValidate: true });
     setValue(`Items.${index}.outward_weight`, e.outward_weight,{ shouldValidate: true });
     setValue(`Items.${index}.yarn_dia`, e.yarn_dia);
@@ -124,47 +158,43 @@ const OutwardEdit = () => {
     setValue(`Items.${index}.deliverd_weight`, e.deliverd_weight);
     setValue(`Items.${index}.yarn_colour`, e.yarn_colour);
     // setValue(`Items.${index}.tax`, e.tax);
-    amountCalculation(index);
+    amountCalculation(watchItems);
   };
 
   const typeChange = (e, index) => {
-    setValue(`Items.${index}.yarn_type.yarn_type_id`, e.yarn_type_id);
+    setValue(`Items.${index}.yarn_type_id`, e.id);
+    setValue(`Items.${index}.yarn_type`, e.yarn_type);
   };
-    
 
   const itemPropChange = (index, propName, value) => {
     setValue(`Items.${index}.${propName}`, value);
-    amountCalculation(index);
+    amountCalculation(watchItems);
   };
 
-  const amountCalculation = (index) => {
-    let qty = Number(getValues(`Items.${index}.outward_qty`));
-    let weight = Number(getValues(`Items.${index}.outward_weight`));
-    // let discount = Number(getValues(`Items.${index}.discount`));
-    // let tax = Number(getValues(`Items.${index}.tax`));
 
-    // let amount = qty * price - discount;
-    // let taxInRs = (tax / 100) * amount;
-    // let finalAmount = qty * price + taxInRs;
-
-    setValue(`Items.${index}.qty`, qty);
-    setValue(`Items.${index}.weight`, weight);
-    setTotalQuantity(watchItems.reduce((acc, item) => acc + item.qty, 0));
-    setTotalWeight(watchItems.reduce((acc, item) => acc + item.weight, 0));
+  const onFormSubmit = (data) => {   
+    data.total_quantity = tempQty;
+    data.total_weight = tempWeight;
+    data.customer_id = data.customer.id;
+    data.mill_id = data.mill.id;
+    putOutward(data);
   };
 
-  const onFormSubmit = (data) => console.log(data);
+  useEffect(() => {
+    if(!isLoading)
+    EditOutward(outward);
+  },[outward])
 
   return (
     <>
       <CustomBox>
         <Flex alignItems="center" gap={2}>
-          <Link to="/outward">
+          <Link to="">
             <ArrowBackIcon w={6} h={6} />
           </Link>
 
           <Heading as="h3" size="lg">
-          Outward Edit Form
+            Outward Add Form
           </Heading>
         </Flex>
       </CustomBox>
@@ -203,6 +233,37 @@ const OutwardEdit = () => {
               )}
             />
 
+            <Controller
+              control={control}
+              name="mill"
+              rules={{
+                required: "Please Select Mill Name.",
+              }}
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                <FormControl isInvalid={errors.mill}>
+                  <FormLabel> Mill Name </FormLabel>
+                  <Select
+                    name={name}
+                    ref={ref}
+                    onChange={(e) => {
+                      onChange(e);
+                    }}
+                    onBlur={onBlur}
+                    value={value}
+                    options={mills}
+                    getOptionLabel={(e) => e.mill_name}
+                    getOptionValue={(e) => e.id}
+                    placeholder="Select Mill"
+                    closeMenuOnSelect={true}
+                    size="sm"
+                  />
+                  <FormErrorMessage>
+                    {errors.mill && errors.mill.message}
+                  </FormErrorMessage>
+                </FormControl>
+              )}
+            />
+
             <FormControl isInvalid={errors.outward_no}>
               <FormLabel> Outward Number </FormLabel>
               <Input
@@ -223,7 +284,7 @@ const OutwardEdit = () => {
               <Input
                 type="number"
                 placeholder="Inward Number"
-                {...register("inward_no", {
+                {...register("inward_id", {
                   required: "Inward Number is Empty",
                 })}
                 size="sm"
@@ -305,6 +366,22 @@ const OutwardEdit = () => {
               </FormErrorMessage>
             </FormControl>
 
+            <FormControl >
+                <FormLabel color="gray.600">User Id</FormLabel>
+                <Input type='number' placeholder="user_id" {
+                    ... register("user_id")
+                }/>
+                <FormErrorMessage></FormErrorMessage>
+            </FormControl> 
+
+            <FormControl >
+                <FormLabel color="gray.600">Status</FormLabel>
+                <Input type='number' placeholder="status" {
+                    ... register("status")
+                }/>
+                <FormErrorMessage></FormErrorMessage>
+            </FormControl> 
+
           </Flex>
         </CustomBox>
 
@@ -317,7 +394,7 @@ const OutwardEdit = () => {
                 <Tr>
                   <Th> No </Th>
                   <Th w={300}> Items </Th>
-                  <Th> Yarn Type </Th>
+                  <Th w={200}> Yarn Type </Th>
                   <Th> Yarn Dia </Th>
                   <Th> Yarn Gauge </Th>
                   <Th> Yarn Gsm </Th>
@@ -376,7 +453,7 @@ const OutwardEdit = () => {
                         <Td>
                           <Controller
                             control={control}
-                            name={`Items.${index}.yarn_type`}
+                            name={`Items.${index}.yarn`}
                             rules={{
                               required: "Please Select Yarn Type.",
                             }}
@@ -384,7 +461,7 @@ const OutwardEdit = () => {
                               field: { onChange, onBlur, value, name, ref },
                             }) => (
                               <FormControl
-                                isInvalid={errors.Items?.[index]?.yarn_type}
+                                isInvalid={errors.Items?.[index]?.yarn}
                               >
                                 <Select
                                   className="z-index"
@@ -399,17 +476,18 @@ const OutwardEdit = () => {
                                   options={yarn_types}
                                   getOptionLabel={(e) => e.yarn_type}
                                   getOptionValue={(e) => e.id}
-                                  placeholder="Select item"
+                                  placeholder="Select Yarn Type"
                                   closeMenuOnSelect={true}
                                   size="sm"
                                 />
                                 <FormErrorMessage>
-                                  {errors.Items?.[index]?.yarn_type?.message}
+                                  {errors.Items?.[index]?.yarn?.message}
                                 </FormErrorMessage>
                               </FormControl>
                             )}
                           />
                         </Td>
+
 
                         <Td>
                           <FormControl>
@@ -585,7 +663,7 @@ const OutwardEdit = () => {
                   <Td> </Td>
                   <Td> </Td>
                   <Td> Total Qty</Td>
-                  <Td> {total_quantity} </Td>
+                  <Td> {tempQty} </Td>
                 </Tr>
                 <Tr>
                   <Td> </Td>
@@ -599,7 +677,7 @@ const OutwardEdit = () => {
                   <Td> </Td>
                   <Td> </Td>
                   <Td> Total Weight</Td>
-                  <Td> {total_weight} </Td>
+                  <Td> {tempWeight} </Td>
                 </Tr>
               </Tbody>
             </Table>
