@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { 
@@ -33,12 +33,39 @@ import {
 import { 
     clearState 
 } from "../../features/knitting/knittingSlice";
+import Paginator from "../../components/paginator";
 
 const Customer = () => {
-
-    const { data:customerData } = useGetCustomerQuery();
-
     const dispatch = useDispatch();
+
+    // const [chitId, setChitid] = useState([]);
+    // const [customers, setCustomers] = useState([]);
+    // const [searchInput, setSearchInput] = useState("");
+    // const [filteredResults, setFilteredResults] = useState([]);
+
+    const [limit, setLimit] = useState(5);
+    const [offset, setOffset] = useState(0);
+    const [curpage,setCurPage] = useState(0);
+    const [recordCount, setRecordCount] = useState(0);
+
+    const { data: customerData, isLoading: customerLoading } = useGetCustomerQuery(
+        {
+          limit,
+          offset,
+          curpage,
+        },
+        {
+          skip: limit === "" && offset === "" && curpage === "",
+        }
+    );
+
+
+    useEffect(() => {
+        if (!customerLoading) {
+          setRecordCount(customerData.total);
+        }
+    }, [customerLoading, customerData]);
+
 
     return(
         <>
@@ -108,7 +135,7 @@ const Customer = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                {customerData && customerData.map((cus, index) => {
+                {customerData && customerData.data.map((cus, index) => {
                     return (
                         <Tr>
                             <Td>{ index + 1 }</Td>
@@ -136,6 +163,14 @@ const Customer = () => {
             </Table>
         </CustomBox>
 
+        <CustomBox padding={0}>
+            <Paginator
+              recordCount={recordCount}
+              setLimit={setLimit}
+              setOffset={setOffset}
+              setCurPage={setCurPage}
+            />
+          </CustomBox>
 
         </>
     );

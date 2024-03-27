@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -19,32 +19,36 @@ import { useGetMillByIdQuery, usePutMillMutation } from "../../services/master/m
 
 
 const MillEdit = () => {
-    const { millId } = useParams();
 
+    const navigate = useNavigate();
     const { 
         register, 
         handleSubmit,
         setValue,
         formState :{errors},
         } = useForm();
+    
+    //  URL TO GET PARAMETER VALUE
+    const { millId } = useParams();
  
     const { data: mill }
         = useGetMillByIdQuery(millId, {
           skip: millId === undefined,
         });
 
-    const [putMill] = usePutMillMutation();
-
     if (mill?.id){
         setValue(`mill_name`, mill.mill_name);
         setValue(`user_id`, mill.user_id);
         setValue(`id`, mill.id);
     }
-
-
+    
+    // UPDATE THE VALUE
+    const [putMill] = usePutMillMutation();
+    
     const onFormSubmit = (data) =>{ 
         putMill(data);
-        console.log(data);
+        navigate('/mill');
+        window.location.reload();
     }
 
     return(

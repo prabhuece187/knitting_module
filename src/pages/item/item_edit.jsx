@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -19,32 +19,37 @@ import { useGetItemByIdQuery, usePutItemMutation } from "../../services/master/i
 
 
 const ItemEdit = () => {
-
-    const { itemId } = useParams();
    
+    const navigate = useNavigate();
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         setValue,
         } = useForm();
+    
+    // PARAMETER VALUE GET IN URL
+    const { itemId } = useParams();
 
     const { data: item }
         = useGetItemByIdQuery(itemId, {
           skip: itemId === undefined,
         });
 
+    // EIDT VALUE SET IN VIEW
     if (item?.id){
         setValue(`item_name`, item.item_name);
         setValue(`user_id`, item.user_id);
         setValue(`id`, item.id);
     }
-
+    
+    //UPDATE THE VALUES 
     const [putItem] = usePutItemMutation();
 
     const onFormSubmit = (data) =>{ 
         putItem(data);
-        console.log(data);
+        navigate('/item');
+        window.location.reload();
     }
 
     return(

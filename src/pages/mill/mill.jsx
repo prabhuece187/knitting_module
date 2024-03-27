@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -22,11 +22,31 @@ import {
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
 import { useGetMillQuery } from "../../services/master/millApi";
-
+import Paginator from "../../components/paginator";
 
 const Mill = () => {
-    
-    const {data:MillData} = useGetMillQuery();
+
+    const [limit, setLimit] = useState(5);
+    const [offset, setOffset] = useState(0);
+    const [curpage,setCurPage] = useState(0);
+    const [recordCount, setRecordCount] = useState(0);
+
+    const {data:MillData , isLoading: millsLoading} = useGetMillQuery(
+          {
+            limit,
+            offset,
+            curpage,
+          },
+          {
+            skip: limit === "" && offset === "" && curpage === "",
+          }
+    );
+
+    useEffect(() => {
+        if (!millsLoading) {
+          setRecordCount(MillData.total);
+        }
+    }, [millsLoading, MillData]);
 
     return(
         <>
@@ -61,7 +81,7 @@ const Mill = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                {MillData && MillData.map((mill, index) => {
+                {MillData && MillData.data.map((mill, index) => {
                     return (
                         <Tr>
                             <Td>{ index + 1 }</Td>
@@ -83,7 +103,15 @@ const Mill = () => {
                 
             </Table>
         </CustomBox>
-
+        
+        <CustomBox padding={0}>
+            <Paginator
+              recordCount={recordCount}
+              setLimit={setLimit}
+              setOffset={setOffset}
+              setCurPage={setCurPage}
+            />
+          </CustomBox>
 
         </>
     );

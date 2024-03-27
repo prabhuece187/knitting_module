@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -23,24 +23,28 @@ import CustomBox from "../../components/customBox";
 import { useGetCustomerByIdQuery,usePutCustomerMutation} from "../../services/master/customerApi";
 
 const CustomerEdit = () => {
+    const navigate = useNavigate();
     const {states} = useSelector((state) => state.knitting);
     const dispatch = useDispatch();
-    const { customerId } = useParams();
+
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         control,
         setValue
-        } = useForm();
+    } = useForm();
+    
+    // PARAMETER VALUE RECEIVED URL
+    const { customerId } = useParams();
 
+    // PARTICULAR CUSTOMER VALUE RECEIVED
     const { data: member }
     = useGetCustomerByIdQuery(customerId, {
       skip: customerId === undefined,
     });
-
-    const [putCustomer] = usePutCustomerMutation();
-
+    
+    // PARTICULAR CUSTOMER VALUE SET VIEW
     if (member?.id){
         setValue(`customer_name`, member.customer_name);
         setValue(`customer_gst_no`, member.customer_gst_no);
@@ -51,12 +55,14 @@ const CustomerEdit = () => {
         setValue(`user_id`, member.user_id);
         setValue(`id`, member.id);
     }
+    
+    // UPDATE CUSTOMER VALUE 
+    const [putCustomer] = usePutCustomerMutation();
 
-
-    const onFormSubmit = (data) =>{ 
-        
+    const onFormSubmit = (data) =>{    
         putCustomer(data);
-        console.log(data);
+        navigate('/customer');
+        window.location.reload();
     }
 
 

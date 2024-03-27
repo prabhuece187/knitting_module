@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-
 
 import {
   Input,
@@ -36,18 +35,14 @@ import { useGetYarnTypeQuery } from "../../services/master/yarntypeApi";
 import { useGetMillQuery } from "../../services/master/millApi";
 
 const InwardEdit = () => {
-  const { inwardId } = useParams();
 
-  const [putInward] = usePutInwardMutation();
-
-  const { data: inward,isLoading } = useGetInwardByIdQuery(inwardId, {
-      skip: inwardId === undefined,
-    });
-
+  // TO READ THE VALUES BASED ON THE MASTER VALUES 
   const { data:customers } = useGetCustomerQuery();
   const { data:items } = useGetItemQuery();
   const { data:yarn_types } = useGetYarnTypeQuery();
   const { data:mills } = useGetMillQuery();
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -64,6 +59,7 @@ const InwardEdit = () => {
     },
     mode: "onChange" });
 
+  // ARRAY VALUE INITILIZE NAME OF ITEMS
   const {
     fields: itemFields,
     append: appendItem,
@@ -74,10 +70,19 @@ const InwardEdit = () => {
   });
 
   const watchItems = watch("Items");
-
+  
+  // TEMPORARY VALUE SET QTY AND WEIGHT
   const tempQty = getValues("total_quantity");
   const tempWeight = getValues("total_weight");
+  
+  // PARAMETER VALUE RECEIVED URL
+  const { inwardId } = useParams();
 
+  const { data: inward } = useGetInwardByIdQuery(inwardId, {
+      skip: inwardId === undefined,
+  });
+  
+  // PARTICULAR INWARD VALUE SET VIEW
   const EditInward = (inward) => { 
     if (inward?.id){
       
@@ -127,25 +132,27 @@ const InwardEdit = () => {
     }
   }
 
+  // AMOUNT CALUCULATION FUNCTION USING TO TOTAL CALCULATION
   function amountCalculation(results) {
     let TotalQty = 0;
     let TotalWeight = 0;
-    for (const key in results) {
-      const total_qty = parseFloat(results[key].inward_qty);
 
+    for (const key in results) {
+
+      // TOTAL QUANTITY CALCULATION IN ARRAY VALUES
+      const total_qty = parseFloat(results[key].inward_qty);
       TotalQty = TotalQty + (Number.isNaN(total_qty) ? 0 : total_qty);
 
-      const inward_weight = parseFloat(results[key].inward_weight);
-
-      TotalWeight = TotalWeight + (Number.isNaN(inward_weight) ? 0 : inward_weight);
+      // TOTAL WEIGHT CALCULATION IN ARRAY VALUES
+      const total_wei = parseFloat(results[key].inward_weight);
+      TotalWeight = TotalWeight + (Number.isNaN(total_wei) ? 0 : total_wei);
     }
-
     setValue("total_quantity", TotalQty);
     setValue("total_weight", TotalWeight);
 
   };
 
-
+  // ITEM ONCHANGE FUNCTION IN SELECT BOX
   const itemChange = (e, index) => {
     setValue(`Items.${index}.item_id`, e.id);
     setValue(`Items.${index}.item_name`, e.item_name);
@@ -155,20 +162,23 @@ const InwardEdit = () => {
     setValue(`Items.${index}.yarn_gsm`, e.yarn_gsm);
     setValue(`Items.${index}.yarn_gauge`, e.yarn_gauge);
     setValue(`Items.${index}.yarn_colour`, e.yarn_colour);
-    // setValue(`Items.${index}.tax`, e.tax);
     amountCalculation(watchItems);
   };
 
-
+  // YARN TYPE ONCHANGE FUNCTION IN SELECT BOX
   const typeChange = (e, index) => {
     setValue(`Items.${index}.yarn_type_id`, e.id);
     setValue(`Items.${index}.yarn_type`, e.yarn_type);
   };
-
+  
+  // QUANTITY AND WEIGHT CHANGE IN PARTICULAR ARRAY TIME FUNCTION
   const itemPropChange = (index, propName, value) => {
     setValue(`Items.${index}.${propName}`, value);
     amountCalculation(watchItems);
   };
+ 
+  // UPDATE THE VALUE IN INWARD
+  const [putInward] = usePutInwardMutation();
 
   const onFormSubmit = (data) => {   
     data.total_quantity = tempQty;
@@ -176,11 +186,13 @@ const InwardEdit = () => {
     data.customer_id = data.customer.id;
     data.mill_id = data.mill.id;
     putInward(data);
+    navigate('/inward');
+    window.location.reload();
   };
-
+  
+  // USE EFFECT
   useEffect(() => {
-    if(!isLoading)
-    EditInward(inward);
+     EditInward(inward);
   },[inward])
 
   return (

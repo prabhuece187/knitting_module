@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
     Button,
@@ -20,19 +20,20 @@ import { usePostItemMutation } from "../../services/master/itemApi";
 
 const ItemAdd = () => {
 
-    const [postItem] = usePostItemMutation();
-   
+    const navigate = useNavigate();
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         } = useForm();
-
+ 
+    const [postItem] = usePostItemMutation();
+    
     const onFormSubmit = (data) => { 
         postItem(data);
-        console.log(data);
+        navigate('/item');
+        window.location.reload();
     };
-
 
     return(
         <>
@@ -41,7 +42,7 @@ const ItemAdd = () => {
                 <Link to="/item">
                     <ArrowBackIcon w={6} h={6} />
                 </Link>
-
+                
                 <Heading as="h3" size="lg">
                     Item Add Form
                 </Heading>

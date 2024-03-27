@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
     Button,
@@ -12,38 +12,44 @@ import {
     Input,
   } from "@chakra-ui/react";
 
-  import { ArrowBackIcon } from "@chakra-ui/icons";
-  import { useForm } from "react-hook-form";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useForm } from "react-hook-form";
 import CustomBox from "../../components/customBox";
 import { useGetYarnTypeByIdQuery, usePutYarnTypeMutation } from "../../services/master/yarntypeApi";
 
 
 const YarnTypeEdit = () => {
-    const { yarntypeId } = useParams();
-
+    
+    const navigate = useNavigate();
     const { 
         register, 
         handleSubmit,
         setValue,
         formState :{errors},
         } = useForm();
-
+    
+    // URL VALUE GET IN PARAMETER
+    const { yarntypeId } = useParams();
+    
     const { data: yarntype }
     = useGetYarnTypeByIdQuery(yarntypeId, {
       skip: yarntypeId === undefined,
     });
-
-    const [putYarnType] = usePutYarnTypeMutation();
-
+    
+    // EDIT VALUE SET IN VIEW
     if (yarntype?.id){
         setValue(`yarn_type`, yarntype.yarn_type);
         setValue(`user_id`, yarntype.user_id);
         setValue(`id`, yarntype.id);
     }
-
+    
+    // UPDATE VALUE
+    const [putYarnType] = usePutYarnTypeMutation();
+    
     const onFormSubmit = (data) =>{ 
         putYarnType(data);
-        console.log(data);
+        navigate('/yarn_type');
+        window.location.reload();
     }
 
 
