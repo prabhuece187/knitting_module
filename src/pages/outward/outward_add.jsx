@@ -1,5 +1,5 @@
 // import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 
 
@@ -38,13 +38,13 @@ import { usePostOutwardMutation } from "../../services/outward/outwarApi";
 
 const OutwardAdd = () => {
 
-  const [postOutward] = usePostOutwardMutation();
-
+  // TO READ THE VALUES BASED ON THE MASTER VALUES 
   const { data:customers } = useGetCustomerQuery();
   const { data:items } = useGetItemQuery();
   const { data:yarn_types } = useGetYarnTypeQuery();
   const { data:mills } = useGetMillQuery();
-
+  
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -55,6 +55,7 @@ const OutwardAdd = () => {
     watch,
   } = useForm({ mode: "onChange" });
 
+  // ARRAY VALUE INITILIZE NAME OF ITEMS
   const {
     fields: itemFields,
     append: appendItem,
@@ -65,31 +66,38 @@ const OutwardAdd = () => {
   });
 
   const watchItems = watch("Items");
-
+  
+  // TEMPORARY VALUE SET QTY AND WEIGHT
   const tempQty = getValues("total_quantity");
   const tempWeight = getValues("total_weight");
-
+  
+  // THIS CODE USING TO EMPTY ARRAY CREATE INITIAL STAGE
   if (itemFields.length === 0) {
     appendItem();
   }
-
+  
+  // AMOUNT CALUCULATION FUNCTION USING TO TOTAL CALCULATION
   function amountCalculation(results) {
     let TotalQty = 0;
     let TotalWeight = 0;
     for (const key in results) {
-      const total_qty = parseFloat(results[key].outward_qty);
 
+      // TOTAL QUANTITY CALCULATION IN ARRAY VALUES
+      const total_qty = parseFloat(results[key].outward_qty);
       TotalQty = TotalQty + (Number.isNaN(total_qty) ? 0 : total_qty);
 
+      // TOTAL WEIGHT CALCULATION IN ARRAY VALUES
       const outward_weight = parseFloat(results[key].outward_weight);
-
       TotalWeight = TotalWeight + (Number.isNaN(outward_weight) ? 0 : outward_weight);
+
     }
+
     setValue("total_quantity", TotalQty);
     setValue("total_weight", TotalWeight);
 
   };
-
+  
+  // ITEM ONCHANGE FUNCTION IN SELECT BOX
   const itemChange = (e, index) => {
     setValue(`Items.${index}.item_id`, e.id);
     setValue(`Items.${index}.item_name`, e.item_name);
@@ -100,21 +108,23 @@ const OutwardAdd = () => {
     setValue(`Items.${index}.yarn_gauge`, e.yarn_gauge);
     setValue(`Items.${index}.deliverd_weight`, e.deliverd_weight);
     setValue(`Items.${index}.yarn_colour`, e.yarn_colour);
-    // setValue(`Items.${index}.tax`, e.tax);
     amountCalculation(watchItems);
   };
 
+  // YARN TYPE ONCHANGE FUNCTION IN SELECT BOX
   const typeChange = (e, index) => {
     setValue(`Items.${index}.yarn_type_id`, e.id);
     setValue(`Items.${index}.yarn_type`, e.yarn_type);
   };
     
-
+  // QUANTITY AND WEIGHT CHANGE IN PARTICULAR ARRAY TIME FUNCTION
   const itemPropChange = (index, propName, value) => {
     setValue(`Items.${index}.${propName}`, value);
     amountCalculation(watchItems);
   };
-
+  
+  // POST THE INWARD VALUE (SUBMITTING)
+  const [postOutward] = usePostOutwardMutation();
 
   const onFormSubmit = (data) => {   
     data.total_quantity = tempQty;
@@ -122,6 +132,8 @@ const OutwardAdd = () => {
     data.customer_id = data.customer.id;
     data.mill_id = data.mill.id;
     postOutward(data);
+    navigate('/outward');
+    window.location.reload();
 };
 
   return (

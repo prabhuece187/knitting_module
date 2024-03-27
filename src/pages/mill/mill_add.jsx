@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
     Button,
@@ -19,17 +19,19 @@ import { usePostMillMutation } from "../../services/master/millApi";
 
 
 const MillAdd = () => {
-   
-    const [postMill] = usePostMillMutation();
+    const navigate = useNavigate();
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         } = useForm();
+    
+    const [postMill] = usePostMillMutation();
 
     const onFormSubmit = (data) => { 
         postMill(data);
-        console.log(data);
+        navigate('/mill');
+        window.location.reload();
     };
 
 

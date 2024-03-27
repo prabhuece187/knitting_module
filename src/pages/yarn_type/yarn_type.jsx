@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -22,10 +22,33 @@ import {
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
 import { useGetYarnTypeQuery } from "../../services/master/yarntypeApi";
-
+import Paginator from "../../components/paginator";
 
 const YarnType = () => {
-    const {data:YarnTypeData} = useGetYarnTypeQuery();
+
+    const [limit, setLimit] = useState(5);
+    const [offset, setOffset] = useState(0);
+    const [curpage,setCurPage] = useState(0);
+    const [recordCount, setRecordCount] = useState(0);
+
+    const {data:YarnTypeData, isLoading: yarnsLoading} = useGetYarnTypeQuery(
+        {
+            limit,
+            offset,
+            curpage,
+          },
+          {
+            skip: limit === "" && offset === "" && curpage === "",
+          }
+    );
+
+    
+    useEffect(() => {
+        if (!yarnsLoading) {
+          setRecordCount(YarnTypeData.total);
+        }
+    }, [yarnsLoading, YarnTypeData]);
+
     return(
         <>
         <CustomBox>
@@ -58,7 +81,7 @@ const YarnType = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                {YarnTypeData && YarnTypeData.map((yarn, index) => {
+                {YarnTypeData && YarnTypeData.data.map((yarn, index) => {
                     return (
                         <Tr>
                             <Td>{ index + 1 }</Td>
@@ -79,7 +102,14 @@ const YarnType = () => {
                 </Tbody>
             </Table>
         </CustomBox>
-
+        <CustomBox padding={0}>
+            <Paginator
+              recordCount={recordCount}
+              setLimit={setLimit}
+              setOffset={setOffset}
+              setCurPage={setCurPage}
+            />
+          </CustomBox>
 
         </>
     );

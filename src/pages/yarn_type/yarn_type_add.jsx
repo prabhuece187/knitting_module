@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
     Button,
@@ -19,18 +19,19 @@ import { usePostYarnTypeMutation } from "../../services/master/yarntypeApi";
 
 
 const YarnTypeAdd = () => {
-   
-    const [postYarnType] = usePostYarnTypeMutation();
-
+    const navigate = useNavigate();
     const { 
         register, 
         handleSubmit,
         formState :{errors},
         } = useForm();
+    
+    const [postYarnType] = usePostYarnTypeMutation();
 
     const onFormSubmit = (data) => { 
         postYarnType(data);
-        console.log(data);
+        navigate('/yarn_type');
+        window.location.reload();
     };
 
 

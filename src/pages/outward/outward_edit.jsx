@@ -1,5 +1,5 @@
 // import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 
 
@@ -39,19 +39,13 @@ import { useEffect } from "react";
 
 const OutwardEdit = () => {
 
-  const { outwardId } = useParams();
+  const navigate = useNavigate();
 
-  const [putOutward] = usePutOutwardMutation();
-
-  const { data: outward,isLoading } = useGetOutwardByIdQuery(outwardId, {
-      skip: outwardId === undefined,
-    });
-
+  // TO READ THE VALUES BASED ON THE MASTER VALUES 
   const { data:customers } = useGetCustomerQuery();
   const { data:items } = useGetItemQuery();
   const { data:yarn_types } = useGetYarnTypeQuery();
   const { data:mills } = useGetMillQuery();
-
 
   const {
     register,
@@ -62,7 +56,8 @@ const OutwardEdit = () => {
     getValues,
     watch,
   } = useForm({ mode: "onChange" });
-
+  
+  // ARRAY VALUE INITILIZE NAME OF ITEMS
   const {
     fields: itemFields,
     append: appendItem,
@@ -74,27 +69,36 @@ const OutwardEdit = () => {
 
   const watchItems = watch("Items");
 
+  // TEMPORARY VALUE SET QTY AND WEIGHT
   const tempQty = getValues("total_quantity");
   const tempWeight = getValues("total_weight");
 
-
+  // AMOUNT CALUCULATION FUNCTION USING TO TOTAL CALCULATION
   function amountCalculation(results) {
     let TotalQty = 0;
     let TotalWeight = 0;
     for (const key in results) {
+      
+      // TOTAL QUANTITY CALCULATION IN ARRAY VALUES
       const total_qty = parseFloat(results[key].outward_qty);
-
       TotalQty = TotalQty + (Number.isNaN(total_qty) ? 0 : total_qty);
 
+      // TOTAL WEIGHT CALCULATION IN ARRAY VALUES
       const outward_weight = parseFloat(results[key].outward_weight);
-
       TotalWeight = TotalWeight + (Number.isNaN(outward_weight) ? 0 : outward_weight);
+
     }
     setValue("total_quantity", TotalQty);
     setValue("total_weight", TotalWeight);
-
   };
 
+  const { outwardId } = useParams();
+
+  const { data: outward,isLoading } = useGetOutwardByIdQuery(outwardId, {
+      skip: outwardId === undefined,
+    });
+  
+  // PARTICULAR INWARD VALUE SET VIEW
   const EditOutward = (outward) => { 
     if (outward?.id){
       
@@ -147,6 +151,7 @@ const OutwardEdit = () => {
     }
   }
 
+  // ITEM ONCHANGE FUNCTION IN SELECT BOX
   const itemChange = (e, index) => {
     setValue(`Items.${index}.item_id`, e.id);
     setValue(`Items.${index}.item_name`, e.item_name);
@@ -157,20 +162,23 @@ const OutwardEdit = () => {
     setValue(`Items.${index}.yarn_gauge`, e.yarn_gauge);
     setValue(`Items.${index}.deliverd_weight`, e.deliverd_weight);
     setValue(`Items.${index}.yarn_colour`, e.yarn_colour);
-    // setValue(`Items.${index}.tax`, e.tax);
     amountCalculation(watchItems);
   };
 
+  // YARN TYPE ONCHANGE FUNCTION IN SELECT BOX
   const typeChange = (e, index) => {
     setValue(`Items.${index}.yarn_type_id`, e.id);
     setValue(`Items.${index}.yarn_type`, e.yarn_type);
   };
 
+  // QUANTITY AND WEIGHT CHANGE IN PARTICULAR ARRAY TIME FUNCTION
   const itemPropChange = (index, propName, value) => {
     setValue(`Items.${index}.${propName}`, value);
     amountCalculation(watchItems);
   };
 
+  // UPDATE THE OUTWARD VALUES
+  const [putOutward] = usePutOutwardMutation();
 
   const onFormSubmit = (data) => {   
     data.total_quantity = tempQty;
@@ -178,8 +186,11 @@ const OutwardEdit = () => {
     data.customer_id = data.customer.id;
     data.mill_id = data.mill.id;
     putOutward(data);
+    navigate('/outward');
+    window.location.reload();
   };
-
+ 
+  // USE EFFECT
   useEffect(() => {
     if(!isLoading)
     EditOutward(outward);

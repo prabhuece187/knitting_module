@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -23,13 +23,31 @@ import {
 
 import CustomBox from "../../components/customBox";
 import { useGetInwardQuery } from "../../services/inward/inwardApi";
-
+import Paginator from "../../components/paginator";
 
 const Inward = () => {
 
-    const {data:InwardData} = useGetInwardQuery();
+    const [limit, setLimit] = useState(5);
+    const [offset, setOffset] = useState(0);
+    const [curpage,setCurPage] = useState(0);
+    const [recordCount, setRecordCount] = useState(0);
 
-    
+    const { data: InwardData, isLoading: InwardLoading} = useGetInwardQuery(
+        {
+            limit,
+            offset,
+            curpage,
+          },
+          {
+            skip: limit === "" && offset === "" && curpage === "",
+          }
+    );
+
+    useEffect(() => {
+        if (!InwardLoading) {
+          setRecordCount(InwardData.total);
+        }
+      }, [InwardLoading, InwardData]);
 
     return(
         <>
@@ -72,7 +90,7 @@ const Inward = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                {InwardData && InwardData.map((inward, index) => {
+                {InwardData && InwardData.data.map((inward, index) => {
                     return (
                         <Tr>
                             <Td>{ index + 1 }</Td>
@@ -102,7 +120,15 @@ const Inward = () => {
                 
             </Table>
         </CustomBox>
-
+        
+         <CustomBox padding={0}>
+            <Paginator
+              recordCount={recordCount}
+              setLimit={setLimit}
+              setOffset={setOffset}
+              setCurPage={setCurPage}
+            />
+          </CustomBox> 
 
         </>
     );

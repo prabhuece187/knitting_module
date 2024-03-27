@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
     Button,
@@ -29,8 +29,7 @@ import {
 const CustomerAdd = () => {
     const {states} = useSelector((state) => state.knitting);
     const dispatch = useDispatch();
-
-    const [postCustomer] = usePostCustomerMutation();
+    const navigate = useNavigate();
 
     const { 
         register, 
@@ -38,12 +37,16 @@ const CustomerAdd = () => {
         formState :{errors},
         control,
     } = useForm();
+    
+    // POST THE CUSTOMER VALUE (SUBMITTING)
+    const [postCustomer] = usePostCustomerMutation();
 
     const onFormSubmit = (data) => { 
-        postCustomer(data);
-        console.log(data);
+       postCustomer(data);
+       navigate('/customer');
     };
 
+   
 
     return(
         <>

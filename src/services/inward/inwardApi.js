@@ -3,18 +3,21 @@ import {createApi,fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 export const inwardApi = createApi({
     reducerPath: "inwardApi",
     baseQuery: fetchBaseQuery({ baseUrl: "http://knitting.coderplays.com/api/" }),
+    tagTypes: ["InwardTag"],
     endpoints: (build) => ({
         getInward: build.query({
-            query: () => ({
-                url: "inward",
+            query: ({limit, offset, curpage }) => ({
+                url: `inward?limit=${limit}&offset=${offset}&curpage=${curpage}`,
                 method: "GET"
             }),
+            providesTags: ["InwardTag"],
         }),
         getInwardById: build.query({
             query: (id) => ({
                 url: `inward_edit/${id}`,
                 method: "GET"
             }),
+            providesTags: ["InwardTag"],
         }),
         postInward: build.mutation({
             query: (data) => ({
@@ -25,6 +28,7 @@ export const inwardApi = createApi({
                     'Content-Type': 'application/json'
                 }
             }),
+            invalidatesTags: ["InwardTag"],
         }),
         putInward: build.mutation({
             query: (data) => ({
@@ -35,6 +39,7 @@ export const inwardApi = createApi({
                     'Content-Type': 'application/json'
                 }
             }),
+            invalidatesTags: ["InwardTag"],
         }),
     }),
 });
