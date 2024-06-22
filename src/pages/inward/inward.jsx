@@ -12,13 +12,17 @@ import {
     Tr,
     Th,
     Td,
+    InputGroup,
+    InputRightElement,
+    Input,
 } from "@chakra-ui/react";
 
 import { 
     ArrowBackIcon ,
     AddIcon,
     EditIcon,
-    DeleteIcon
+    DeleteIcon,
+    Search2Icon
 } from "@chakra-ui/icons";
 
 import CustomBox from "../../components/customBox";
@@ -32,22 +36,41 @@ const Inward = () => {
     const [curpage,setCurPage] = useState(0);
     const [recordCount, setRecordCount] = useState(0);
 
+    const [searchInput, setSearchInput] = useState("");
+    // const [filteredResults, setFilteredResults] = useState([]);
+
+    // const [inwards, setInwards] = useState([]);
+
     const { data: InwardData, isLoading: InwardLoading} = useGetInwardQuery(
         {
             limit,
             offset,
             curpage,
+            searchInput,
           },
           {
-            skip: limit === "" && offset === "" && curpage === "",
+            skip: limit === 0 && offset === 0 && curpage === 0 && searchInput === "",
           }
     );
 
-    useEffect(() => {
-        if (!InwardLoading) {
-          setRecordCount(InwardData.total);
+    const searchIteams = (e) => {
+        if (e.target.value === "") {
+            setSearchInput("true")
         }
-      }, [InwardLoading, InwardData]);
+        delayedFetchSearchResults(e.target.value);
+    }
+
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    };
+
+    const delayedFetchSearchResults = debounce((query) => {
+        setSearchInput(query);
+    }, 2000);
 
     return(
         <>
@@ -62,6 +85,15 @@ const Inward = () => {
                 </Heading>
 
                 <Spacer/>
+
+                <Flex>
+                    <InputGroup>
+                        <Input onChange={(e) => searchIteams(e)} />
+                        <InputRightElement
+                        children={<Search2Icon color="blue.500" />}
+                        />
+                    </InputGroup>
+                </Flex>
 
                 <Link to="/inward_add">
                     <Button colorScheme="blue">
@@ -90,9 +122,9 @@ const Inward = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                {InwardData && InwardData.data.map((inward, index) => {
+                { !InwardLoading && InwardData.data.map((inward, index) => {
                     return (
-                        <Tr>
+                        <Tr key={index}>
                             <Td>{ index + 1 }</Td>
                             <Td>{ inward.customer.customer_name }</Td>
                             <Td>{ inward.mill.mill_name }</Td>
@@ -114,8 +146,9 @@ const Inward = () => {
                                 </Link>
                             </Td>
                         </Tr>
-                     );
-                    })}
+                         );
+                        })
+                      }
                 </Tbody>
                 
             </Table>

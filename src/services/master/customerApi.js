@@ -6,8 +6,8 @@ export const customerApi = createApi({
     tagTypes: ["CustomerTag"],
     endpoints: (build) => ({
         getCustomer: build.query({
-            query: ({ limit, offset, curpage }) => ({
-                url: `customers?limit=${limit}&offset=${offset}&curpage=${curpage}`,
+            query: ({ limit, offset, curpage, searchInput }) => ({
+                url: `customers?limit=${limit}&offset=${offset}&curpage=${curpage}&searchInput=${searchInput}`,
                 method: "GET"
             }),
             providesTags: ["CustomerTag"],

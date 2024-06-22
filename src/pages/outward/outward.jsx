@@ -12,13 +12,17 @@ import {
     Tr,
     Th,
     Td,
+    InputGroup,
+    InputRightElement,
+    Input,
 } from "@chakra-ui/react";
 
 import { 
     ArrowBackIcon ,
     AddIcon,
     EditIcon,
-    DeleteIcon
+    DeleteIcon,
+    Search2Icon
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
 import { useGetOutwardQuery } from "../../services/outward/outwarApi";
@@ -31,23 +35,38 @@ const Outward = () => {
     const [offset, setOffset] = useState(0);
     const [curpage,setCurPage] = useState(0);
     const [recordCount, setRecordCount] = useState(0);
+    const [searchInput, setSearchInput] = useState("");
 
     const {data:OutwardData, isLoading: outwardsLoading} = useGetOutwardQuery(
         {
             limit,
             offset,
             curpage,
+            searchInput,
           },
           {
-            skip: limit === "" && offset === "" && curpage === "",
+            skip: limit === 0 && offset === 0 && curpage === 0 && searchInput === "",
           }
     );
 
-    useEffect(() => {
-        if (!outwardsLoading) {
-          setRecordCount(OutwardData.total);
+    const searchIteams = (e) => {
+        if (e.target.value === "") {
+            setSearchInput("true")
         }
-    }, [outwardsLoading, OutwardData]);
+        delayedFetchSearchResults(e.target.value);
+    }
+
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    };
+
+    const delayedFetchSearchResults = debounce((query) => {
+        setSearchInput(query);
+    }, 2000);
 
     return(
         <>
@@ -62,6 +81,15 @@ const Outward = () => {
                 </Heading>
 
                 <Spacer/>
+
+                <Flex>
+                    <InputGroup>
+                        <Input onChange={(e) => searchIteams(e)} />
+                        <InputRightElement
+                        children={<Search2Icon color="blue.500" />}
+                        />
+                    </InputGroup>
+                </Flex>
 
                 <Link to="/outward_add">
                     <Button colorScheme="blue">
@@ -91,15 +119,14 @@ const Outward = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-
-                {OutwardData && OutwardData.data.map((outward, index) => {
+                { !outwardsLoading && OutwardData.data.map((outward, index) => {
                     return (
-                    <Tr>
+                    <Tr key={index}>
                         <Td>{ index + 1 }</Td>
                         <Td>{ outward.customer.customer_name }</Td>
                         <Td>{ outward.mill.mill_name }</Td>
                         <Td>{ outward.outward_no }</Td>
-                        <Td>{ outward.inward_no }</Td>
+                        <Td>{ outward.inward.inward_no }</Td>
                         <Td>{ outward.outward_tin_no }</Td>
                         <Td>{ outward.outward_date }</Td>
                         <Td>{ outward.total_weight }</Td>
@@ -119,7 +146,8 @@ const Outward = () => {
                         </Td>
                     </Tr>
                      );
-                    })}
+                    })
+                    }
                 </Tbody>
                 
             </Table>

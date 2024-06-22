@@ -6,8 +6,8 @@ export const outwardApi = createApi({
     tagTypes: ["OutwardTag"],
     endpoints: (build) => ({
         getOutward: build.query({
-            query: ({ limit, offset, curpage }) => ({
-                url: `outward?limit=${limit}&offset=${offset}&curpage=${curpage}`,
+            query: ({ limit, offset, curpage, searchInput }) => ({
+                url: `outwards?limit=${limit}&offset=${offset}&curpage=${curpage}&searchInput=${searchInput}`,
                 method: "GET"
             }),
             providesTags: ["OutwardTag"],
