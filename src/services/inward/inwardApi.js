@@ -6,8 +6,8 @@ export const inwardApi = createApi({
     tagTypes: ["InwardTag"],
     endpoints: (build) => ({
         getInward: build.query({
-            query: ({limit, offset, curpage }) => ({
-                url: `inward?limit=${limit}&offset=${offset}&curpage=${curpage}`,
+            query: ({limit, offset, curpage, searchInput  }) => ({
+                url: `inwards?limit=${limit}&offset=${offset}&curpage=${curpage}&searchInput=${searchInput}`,
                 method: "GET"
             }),
             providesTags: ["InwardTag"],

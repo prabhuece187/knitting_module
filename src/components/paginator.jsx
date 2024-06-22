@@ -36,7 +36,7 @@ const Paginator = ({ recordCount, setLimit, setOffset ,setCurPage }) => {
       inner: innerLimit,
     },
     initialState: {
-      pageSize: 25,
+      pageSize: 15,
       isDisabled: false,
       currentPage: 1,
     },

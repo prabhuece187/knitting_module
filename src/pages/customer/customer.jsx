@@ -16,13 +16,17 @@ import {
     Tr,
     Th,
     Td,
+    InputGroup,
+    InputRightElement,
+    Input,
 } from "@chakra-ui/react";
 
 import { 
     ArrowBackIcon ,
     AddIcon,
     EditIcon,
-    DeleteIcon
+    DeleteIcon,
+    Search2Icon
 } from "@chakra-ui/icons";
 import CustomBox from "../../components/customBox";
 
@@ -48,20 +52,42 @@ const Customer = () => {
     const [curpage,setCurPage] = useState(0);
     const [recordCount, setRecordCount] = useState(0);
 
+    const [customers, setCustomers] = useState([]);
+
+    const [searchInput, setSearchInput] = useState("");
+    const [filteredResults, setFilteredResults] = useState([]);
+  
+
     const { data: customerData, isLoading: customerLoading } = useGetCustomerQuery(
         {
           limit,
           offset,
           curpage,
+          searchInput,
         },
         {
-          skip: limit === "" && offset === "" && curpage === "",
+           skip: limit === 0 && offset === 0 && curpage === 0 && searchInput === "",
         }
     );
 
+    const searchIteams = (searchValue) => {
+        setSearchInput(searchValue);
+        if (searchInput !== "") {
+          const filteredData = customers.filter((item) => {
+            return Object.values(item)
+              .join("")
+              .toLowerCase()
+              .includes(searchInput.toLowerCase());
+          });
+          setFilteredResults(filteredData);
+        } else {
+          setFilteredResults(customers);
+        }
+    }
 
     useEffect(() => {
         if (!customerLoading) {
+          setCustomers(customerData.data);
           setRecordCount(customerData.total);
         }
     }, [customerLoading, customerData]);
@@ -69,32 +95,6 @@ const Customer = () => {
 
     return(
         <>
-        {/* <Box bg='white'  p={3} mb={5}  style={{borderRadius:"10px"}}>
-          <Flex alignItems="center" gap={2}>
-            <Link to="">
-                <ArrowBackIcon w={6} h={6} />
-            </Link>
-
-            <Heading as="h3" size="lg" color="gray.600">
-              Customer 
-            </Heading>
-
-            <Spacer/>
-
-            <Link to="/customer_add">
-                <Button colorScheme="blue">
-                    <AddIcon w={4} h={4}  pr={2}/>
-                    Add Customer
-                </Button>   
-            </Link>
-
-            <Button colorScheme="blue" onClick={() => dispatch(clearState())}>
-                Clear State
-            </Button>
-
-          </Flex>
-        </Box> */}
-
         <CustomBox>
             <Flex alignItems="center" gap={2}>
                 <Link to="">
@@ -106,6 +106,15 @@ const Customer = () => {
                 </Heading>
 
                 <Spacer/>
+
+                <Flex>
+                    <InputGroup>
+                        <Input onChange={(e) => searchIteams(e.target.value)} />
+                        <InputRightElement
+                        children={<Search2Icon color="blue.500" />}
+                        />
+                    </InputGroup>
+                </Flex>
 
                 <Link to="/customer_add">
                     <Button colorScheme="blue">
@@ -135,9 +144,33 @@ const Customer = () => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                {customerData && customerData.data.map((cus, index) => {
-                    return (
-                        <Tr>
+                {searchInput.length > 0
+                    ? filteredResults.map((cus, index) => {
+                        return (
+                          <Tr key={index}>
+                             <Td>{ index + 1 }</Td>
+                            <Td>{ cus.customer_name }</Td>
+                            <Td>{ cus.customer_state }</Td>
+                            <Td>{ cus.customer_gst_no }</Td>
+                            <Td>{ cus.customer_mobile }</Td>
+                            <Td>{ cus.customer_email }</Td>
+                            <Td>{ cus.customer_address }</Td>
+                            <Td>
+                                <Link to={{
+                                      pathname: `/customer_edit/${cus.id}`,
+                                    }}  pr={5} color="#3182ce">
+                                    <EditIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                                <Link to="" pr={5} color="#3182ce">
+                                    <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
+                                </Link>
+                            </Td>
+                          </Tr>
+                        );
+                      })
+                    : customers.map((cus, index) => {
+                        return (
+                          <Tr key={index}>
                             <Td>{ index + 1 }</Td>
                             <Td>{ cus.customer_name }</Td>
                             <Td>{ cus.customer_state }</Td>
@@ -155,9 +188,11 @@ const Customer = () => {
                                     <DeleteIcon w={6} h={6} pr={2} color="#3182ce"/>
                                 </Link>
                             </Td>
-                        </Tr>
-                    );
-                })}
+                          </Tr>
+                        );
+                      })
+                    }
+
                 </Tbody>
                 
             </Table>
@@ -174,6 +209,6 @@ const Customer = () => {
 
         </>
     );
-}
+};
 
 export default Customer;
